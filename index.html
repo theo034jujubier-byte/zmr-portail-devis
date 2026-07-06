@@ -1,0 +1,353 @@
+<div id="devis-root"></div>
+<style>
+  #devis-root {
+    --orange: #E8622C;
+    --dark: #1f2937;
+    --dark2: #111827;
+    --paper: #ffffff;
+    --line: #e2e2e2;
+    --grey-bg: #f7f6f4;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: var(--dark2);
+    max-width: 1000px;
+    margin: 0 auto;
+    background: var(--paper);
+  }
+  #devis-root * { box-sizing: border-box; }
+  #devis-root .toolbar {
+    display: flex; gap: 10px; justify-content: flex-end; padding: 10px 0 16px;
+  }
+  #devis-root button {
+    cursor: pointer; border: none; border-radius: 6px; font-weight: 600; font-size: 13px;
+    padding: 9px 16px; transition: transform .1s ease;
+  }
+  #devis-root button:active { transform: scale(0.97); }
+  #devis-root .btn-primary { background: var(--orange); color: white; }
+  #devis-root .btn-secondary { background: var(--dark); color: white; }
+  #devis-root .btn-ghost { background: #eee; color: var(--dark2); }
+  #devis-root .btn-danger { background: #fbeaea; color: #b3261e; }
+
+  #devis-root .sheet { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  #devis-root .head {
+    background: var(--dark2); color: white; padding: 22px 28px;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;
+  }
+  #devis-root .head .brand { display:flex; flex-direction:column; gap:4px; }
+  #devis-root .head .brand .name { font-size: 22px; font-weight: 800; letter-spacing: 0.5px; }
+  #devis-root .head .brand .name span { color: var(--orange); }
+  #devis-root .head .brand .sub { font-size: 11px; color: #cbd2db; text-transform: uppercase; letter-spacing: 1.5px; }
+  #devis-root .head .contact { font-size: 12px; text-align: right; color: #d7dce3; line-height: 1.6; }
+  #devis-root .head .contact input {
+    background: transparent; border: none; border-bottom: 1px dashed #5a6472; color: white;
+    text-align: right; font-size: 12px; padding: 2px 0; width: 220px;
+  }
+
+  #devis-root .titlebar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 28px; border-bottom: 1px solid var(--line); background: var(--grey-bg);
+  }
+  #devis-root .titlebar h1 { font-size: 20px; margin: 0; color: var(--dark2); }
+  #devis-root .titlebar .meta { display: flex; gap: 18px; font-size: 12px; }
+  #devis-root .titlebar .meta div { display: flex; flex-direction: column; gap: 3px; }
+  #devis-root .titlebar .meta label { font-size: 10px; text-transform: uppercase; color: #888; letter-spacing: 0.5px; }
+  #devis-root .titlebar .meta input { border: 1px solid var(--line); border-radius: 4px; padding: 5px 7px; font-size: 12px; }
+
+  #devis-root .section { padding: 20px 28px; border-bottom: 1px solid var(--line); }
+  #devis-root .section h2 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--orange);
+    margin: 0 0 12px; border-bottom: 2px solid var(--orange); display: inline-block; padding-bottom: 4px;
+  }
+  #devis-root .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  #devis-root .field { display: flex; flex-direction: column; gap: 4px; }
+  #devis-root .field label { font-size: 11px; color: #666; }
+  #devis-root .field input, #devis-root .field textarea, #devis-root select {
+    border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; font-size: 13px; font-family: inherit;
+  }
+  #devis-root textarea { resize: vertical; }
+
+  #devis-root table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  #devis-root th { background: var(--grey-bg); text-align: left; padding: 8px 6px; font-size: 10.5px; text-transform: uppercase; color: #777; border-bottom: 1px solid var(--line); }
+  #devis-root td { padding: 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  #devis-root td input, #devis-root td select, #devis-root td textarea { width: 100%; border: 1px solid var(--line); border-radius: 4px; padding: 5px 6px; font-size: 12px; font-family: inherit; }
+  #devis-root td.num { text-align: right; white-space: nowrap; }
+  #devis-root .row-del { background: none; border: none; color: #b3261e; font-size: 15px; cursor: pointer; padding: 2px 6px; }
+  #devis-root .addline { margin-top: 10px; }
+
+  #devis-root .totals { display: flex; justify-content: flex-end; }
+  #devis-root .totals table { width: 320px; }
+  #devis-root .totals td { padding: 6px 4px; }
+  #devis-root .totals .lbl { color: #555; }
+  #devis-root .totals .grand td { font-weight: 800; font-size: 15px; border-top: 2px solid var(--dark2); color: var(--dark2); }
+  #devis-root .totals select { padding: 3px 6px; font-size: 12px; }
+
+  #devis-root .sign-row { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+  #devis-root .sign-box { flex: 1; min-width: 260px; }
+  #devis-root .sign-box h3 { font-size: 12px; margin: 0 0 8px; color: var(--dark2); }
+  #devis-root canvas {
+    border: 1.5px dashed #bbb; border-radius: 8px; width: 100%; height: 150px; touch-action: none; background: #fff;
+  }
+  #devis-root .sign-actions { display: flex; gap: 8px; margin-top: 8px; }
+  #devis-root .checkline { font-size: 12px; margin-top: 10px; display: flex; align-items: center; gap: 7px; }
+
+  #devis-root .footer-note { padding: 16px 28px; font-size: 10.5px; color: #888; text-align: center; }
+
+  @media print {
+    #devis-root .toolbar, #devis-root .row-del, #devis-root .addline, #devis-root .sign-actions { display: none !important; }
+    #devis-root .sheet { border: none; }
+    #devis-root canvas { border: 1px solid #999; }
+    #devis-root button { display: none; }
+  }
+</style>
+
+<script>
+(function(){
+  const CATALOGUE = [
+    {ref:"ZMR 4924391", nom:"OCLER - Portail Lucas 2 vantaux manuel", matiere:"Aluminium", teinte:"Blanc (autre sur devis)", dims:"1750 x 3000 mm"},
+    {ref:"ZMR 6241195", nom:"ALUCLOS - Portail Alu.line battant 3,50m lame pleine", matiere:"Aluminium", teinte:"Gris texturé 7016", dims:"1685 x 3500 mm"},
+    {ref:"ZMR 6241197", nom:"ALUCLOS - Portail Alu.line battant 3,50m lame semi-ajourée", matiere:"Aluminium", teinte:"Noir sablé 2100", dims:"1685 x 3500 mm"},
+    {ref:"POINT.P 4924515", nom:"DC - Portail Planet 2 vantaux manuel", matiere:"Aluminium", teinte:"Blanc (autre sur devis)", dims:"1750 x 3000 mm"},
+    {ref:"POINT.P 6241192", nom:"ALUCLOS - Portail Alu.line battant 3m lame semi-ajourée", matiere:"Aluminium", teinte:"Gris texturé 7016", dims:"1685 x 3000 mm"},
+    {ref:"POINT.P 4924386", nom:"OCLER - Portail Lou 2 vantaux manuel", matiere:"Aluminium", teinte:"Blanc (autre sur devis)", dims:"1850 x 3000 mm"},
+    {ref:"POINT.P 4924388", nom:"OCLER - Portail Nina 2 vantaux manuel", matiere:"Aluminium", teinte:"Blanc (autre sur devis)", dims:"1750 x 3000 mm"},
+    {ref:"POINT.P 4924517", nom:"DC - Portail Supremus 2 vantaux manuel", matiere:"Aluminium", teinte:"Blanc (autre sur devis)", dims:"1750 x 3000 mm"},
+    {ref:"POINT.P 4924389", nom:"OCLER - Portail Tess 2 vantaux manuel", matiere:"Aluminium", teinte:"Blanc (autre sur devis)", dims:"1750 x 3000 mm"},
+    {ref:"POINT.P 4924390", nom:"OCLER - Portail Noah 2 vantaux manuel", matiere:"Aluminium", teinte:"Blanc (autre sur devis)", dims:"1750 x 3000 mm"},
+    {ref:"POINT.P 4924518", nom:"DC - Portail CG 69 Orize 2 vantaux manuel", matiere:"Aluminium", teinte:"Blanc (autre sur devis)", dims:"1750 x 3000 mm"},
+    {ref:"POINT.P 4924520", nom:"DC - Portail CV 23 Cobalt 2 vantaux manuel", matiere:"PVC", teinte:"Blanc", dims:"1750 x 3000 mm"},
+    {ref:"POINT.P 4924519", nom:"DC - Portail CV 67 Thor 2 vantaux manuel", matiere:"PVC", teinte:"Blanc", dims:"1750 x 3000 mm"},
+    {ref:"POINT.P 7769038", nom:"CLOHEAC - Portail battant PVC Jarama", matiere:"PVC", teinte:"Blanc RAL 9010", dims:"1400 x 1500 mm"},
+    {ref:"", nom:"Autre / Sur mesure", matiere:"", teinte:"", dims:""}
+  ];
+
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('fr-FR');
+  const devisNum = "DZ-" + today.getFullYear() + String(today.getMonth()+1).padStart(2,'0') + String(today.getDate()).padStart(2,'0') + "-" + String(Math.floor(Math.random()*900)+100);
+
+  const root = document.getElementById('devis-root');
+
+  root.innerHTML = `
+    <div class="toolbar">
+      <button class="btn-ghost" id="btnClearSign">Effacer signature</button>
+      <button class="btn-secondary" id="btnPrint">Imprimer / PDF</button>
+    </div>
+    <div class="sheet">
+      <div class="head">
+        <div class="brand">
+          <div class="name">ZMR <span>FERMETURE</span></div>
+          <div class="sub">Serrurerie · Menuiserie & Miroiterie</div>
+        </div>
+        <div class="contact">
+          <div><input id="cEntreprise" value="ORLEANS MENUISERIE ZMR Fermeture"/></div>
+          <div><input id="cTel" value="Tél : 07 83 60 66 78"/></div>
+          <div><input id="cAdresse" placeholder="Adresse de l'entreprise"/></div>
+          <div><input id="cSiret" placeholder="SIRET"/></div>
+        </div>
+      </div>
+
+      <div class="titlebar">
+        <h1>Devis</h1>
+        <div class="meta">
+          <div><label>N° Devis</label><input id="mNum" value="${devisNum}"/></div>
+          <div><label>Date</label><input id="mDate" value="${dateStr}"/></div>
+          <div><label>Validité</label><input id="mValidite" value="30 jours"/></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Client</h2>
+        <div class="grid2">
+          <div class="field"><label>Nom / Prénom</label><input id="clNom" placeholder="Nom du client"/></div>
+          <div class="field"><label>Téléphone</label><input id="clTel" placeholder="Téléphone"/></div>
+          <div class="field"><label>Adresse des travaux</label><input id="clAdresse" placeholder="Adresse complète"/></div>
+          <div class="field"><label>Email</label><input id="clEmail" placeholder="Email"/></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Détail du chiffrage</h2>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:22%">Modèle (catalogue)</th>
+              <th style="width:16%">Référence</th>
+              <th style="width:14%">Dimensions</th>
+              <th style="width:12%">Teinte / Matière</th>
+              <th style="width:6%">Qté</th>
+              <th style="width:12%">PU HT (€)</th>
+              <th style="width:12%">Total HT (€)</th>
+              <th style="width:4%"></th>
+            </tr>
+          </thead>
+          <tbody id="lineBody"></tbody>
+        </table>
+        <button class="btn-ghost addline" id="btnAddLine">+ Ajouter une ligne</button>
+      </div>
+
+      <div class="section">
+        <h2>Remarques / options</h2>
+        <div class="field">
+          <textarea id="remarques" rows="3" placeholder="Motorisation, pose, dépose de l'ancien portail, teinte spéciale, délai, etc."></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="totals">
+          <table>
+            <tr><td class="lbl">Total HT</td><td class="num" id="totHT">0,00 €</td></tr>
+            <tr><td class="lbl">TVA
+              <select id="tvaRate">
+                <option value="20">20%</option>
+                <option value="10">10%</option>
+                <option value="5.5">5,5%</option>
+                <option value="0">0%</option>
+              </select>
+            </td><td class="num" id="totTVA">0,00 €</td></tr>
+            <tr class="grand"><td>Total TTC</td><td class="num" id="totTTC">0,00 €</td></tr>
+            <tr><td class="lbl">Acompte à la commande (%)</td><td class="num"><input id="acompteRate" value="30" style="width:50px; text-align:right;"/> %</td></tr>
+            <tr><td class="lbl">Montant acompte</td><td class="num" id="totAcompte">0,00 €</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Conditions</h2>
+        <div class="field">
+          <textarea id="conditions" rows="3">Devis valable 30 jours à compter de sa date d'émission. Travaux réalisés selon les règles de l'art. Un acompte est demandé à la signature, le solde étant dû à la réception des travaux. Garantie fabricant selon fiche produit.</textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Bon pour accord</h2>
+        <div class="sign-row">
+          <div class="sign-box">
+            <h3>Signature du client</h3>
+            <canvas id="signClient" width="500" height="150"></canvas>
+            <div class="sign-actions">
+              <button class="btn-ghost" id="btnClearClient">Effacer</button>
+            </div>
+            <div class="checkline">
+              <input type="checkbox" id="chkAccord"/>
+              <label for="chkAccord">Bon pour accord — le client reconnaît avoir pris connaissance des conditions ci-dessus</label>
+            </div>
+          </div>
+          <div class="sign-box">
+            <h3>Signature ZMR Fermeture</h3>
+            <canvas id="signPro" width="500" height="150"></canvas>
+            <div class="sign-actions">
+              <button class="btn-ghost" id="btnClearPro">Effacer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note">ZMR Fermeture — Serrurerie, Menuiserie & Miroiterie — Document généré le ${dateStr}</div>
+    </div>
+  `;
+
+  // ---- line items ----
+  const lineBody = root.querySelector('#lineBody');
+  let lineCount = 0;
+
+  function optionsHtml(selectedIdx) {
+    return CATALOGUE.map((p,i) => `<option value="${i}" ${i===selectedIdx?'selected':''}>${p.nom}</option>`).join('');
+  }
+
+  function addLine() {
+    const idx = lineCount++;
+    const tr = document.createElement('tr');
+    tr.dataset.idx = idx;
+    tr.innerHTML = `
+      <td><select class="selModel">${optionsHtml(0)}</select></td>
+      <td><input class="fRef" value="${CATALOGUE[0].ref}"/></td>
+      <td><input class="fDims" value="${CATALOGUE[0].dims}"/></td>
+      <td><input class="fTeinte" value="${CATALOGUE[0].matiere} - ${CATALOGUE[0].teinte}"/></td>
+      <td><input class="fQte" type="number" min="1" value="1"/></td>
+      <td><input class="fPU" type="number" min="0" step="0.01" value="0"/></td>
+      <td class="num fTotal">0,00 €</td>
+      <td><button class="row-del">✕</button></td>
+    `;
+    lineBody.appendChild(tr);
+
+    const sel = tr.querySelector('.selModel');
+    sel.addEventListener('change', () => {
+      const p = CATALOGUE[sel.value];
+      tr.querySelector('.fRef').value = p.ref;
+      tr.querySelector('.fDims').value = p.dims;
+      tr.querySelector('.fTeinte').value = (p.matiere ? p.matiere + " - " : "") + p.teinte;
+      recalc();
+    });
+    tr.querySelectorAll('.fQte, .fPU').forEach(inp => inp.addEventListener('input', recalc));
+    tr.querySelector('.row-del').addEventListener('click', () => { tr.remove(); recalc(); });
+  }
+
+  function euro(n) {
+    return n.toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+  }
+
+  function recalc() {
+    let totalHT = 0;
+    lineBody.querySelectorAll('tr').forEach(tr => {
+      const qte = parseFloat(tr.querySelector('.fQte').value) || 0;
+      const pu = parseFloat(tr.querySelector('.fPU').value) || 0;
+      const t = qte * pu;
+      tr.querySelector('.fTotal').textContent = euro(t);
+      totalHT += t;
+    });
+    const tvaRate = parseFloat(root.querySelector('#tvaRate').value) || 0;
+    const tva = totalHT * tvaRate / 100;
+    const ttc = totalHT + tva;
+    const acRate = parseFloat(root.querySelector('#acompteRate').value) || 0;
+    const acompte = ttc * acRate / 100;
+    root.querySelector('#totHT').textContent = euro(totalHT);
+    root.querySelector('#totTVA').textContent = euro(tva);
+    root.querySelector('#totTTC').textContent = euro(ttc);
+    root.querySelector('#totAcompte').textContent = euro(acompte);
+  }
+
+  root.querySelector('#btnAddLine').addEventListener('click', addLine);
+  root.querySelector('#tvaRate').addEventListener('change', recalc);
+  root.querySelector('#acompteRate').addEventListener('input', recalc);
+  root.querySelector('#btnPrint').addEventListener('click', () => window.print());
+
+  addLine();
+  recalc();
+
+  // ---- signature pads ----
+  function setupSignaturePad(canvas) {
+    const ctx = canvas.getContext('2d');
+    ctx.strokeStyle = '#111827';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    let drawing = false;
+
+    function pos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+    }
+    function start(e) { drawing = true; const p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); e.preventDefault(); }
+    function move(e) { if (!drawing) return; const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); }
+    function end() { drawing = false; }
+
+    canvas.addEventListener('mousedown', start);
+    canvas.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', end);
+    canvas.addEventListener('touchstart', start, {passive:false});
+    canvas.addEventListener('touchmove', move, {passive:false});
+    canvas.addEventListener('touchend', end);
+
+    return () => ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+
+  const clientCanvas = root.querySelector('#signClient');
+  const proCanvas = root.querySelector('#signPro');
+  const clearClient = setupSignaturePad(clientCanvas);
+  const clearPro = setupSignaturePad(proCanvas);
+  root.querySelector('#btnClearClient').addEventListener('click', clearClient);
+  root.querySelector('#btnClearPro').addEventListener('click', clearPro);
+  root.querySelector('#btnClearSign').addEventListener('click', () => { clearClient(); clearPro(); });
+})();
+</script>
