@@ -31,6 +31,7 @@
   #devis-root .head {
     background: var(--dark2); color: white; padding: 22px 28px;
     display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact;
   }
   #devis-root .head .brand { display:flex; flex-direction:column; gap:4px; }
   #devis-root .head .brand .name { font-size: 22px; font-weight: 800; letter-spacing: 0.5px; }
@@ -67,6 +68,9 @@
 
   #devis-root table { width: 100%; border-collapse: collapse; font-size: 12px; }
   #devis-root th { background: var(--grey-bg); text-align: left; padding: 8px 6px; font-size: 10.5px; text-transform: uppercase; color: #777; border-bottom: 1px solid var(--line); }
+  #devis-root .editableHead { outline: none; border-bottom: 1px dashed transparent; padding: 1px 2px; border-radius: 3px; }
+  #devis-root .editableHead:hover, #devis-root .editableHead:focus { border-bottom: 1px dashed var(--orange); background: #fff; }
+  @media print { #devis-root .editableHead { border-bottom: none !important; } }
   #devis-root td { padding: 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
   #devis-root td input, #devis-root td select, #devis-root td textarea { width: 100%; border: 1px solid var(--line); border-radius: 4px; padding: 5px 6px; font-size: 12px; font-family: inherit; }
   #devis-root td.num { text-align: right; white-space: nowrap; }
@@ -89,36 +93,36 @@
   #devis-root .sign-actions { display: flex; gap: 8px; margin-top: 8px; }
   #devis-root .checkline { font-size: 12px; margin-top: 10px; display: flex; align-items: center; gap: 7px; }
 
-  #devis-root .footer-note { padding: 16px 28px; font-size: 10.5px; color: #888; text-align: center; }
 
   @media print {
+    #devis-root { -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
     #devis-root .toolbar, #devis-root .row-del, #devis-root .addline, #devis-root .sign-actions { display: none !important; }
     #devis-root .sheet { border: none; }
     #devis-root canvas { border: 1px solid #999; }
     #devis-root button { display: none; }
+    #devis-root .head { background: var(--dark2) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    #devis-root .head .brand .name span { color: var(--orange) !important; }
+    #devis-root input, #devis-root select, #devis-root textarea {
+      border: none !important;
+      background: transparent !important;
+      padding: 1px 2px !important;
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      color: #111 !important;
+      resize: none !important;
+    }
+    #devis-root .head .contact input { border-bottom: none !important; color: #fff !important; }
+    #devis-root .titlebar .meta input { text-align: left; }
+    #devis-root table, #devis-root th, #devis-root td { border-collapse: collapse; }
+    #devis-root th { background: transparent !important; border-bottom: 1px solid #999 !important; }
+    #devis-root td { border-bottom: 1px solid #ddd !important; }
+    #devis-root .totals table td { border: none !important; }
+    #devis-root .totals .grand td { border-top: 1.5px solid #111 !important; }
   }
 </style>
 
 <script>
 (function(){
-  const CATALOGUE = [
-    {ref:"ZMR 4924391", nom:"OCLER - Portail Lucas 2 vantaux manuel", matiere:"Aluminium", teinte:"Blanc (autre sur devis)", dims:"1750 x 3000 mm"},
-    {ref:"ZMR 6241195", nom:"ALUCLOS - Portail Alu.line battant 3,50m lame pleine", matiere:"Aluminium", teinte:"Gris texturé 7016", dims:"1685 x 3500 mm"},
-    {ref:"ZMR 6241197", nom:"ALUCLOS - Portail Alu.line battant 3,50m lame semi-ajourée", matiere:"Aluminium", teinte:"Noir sablé 2100", dims:"1685 x 3500 mm"},
-    {ref:"POINT.P 4924515", nom:"DC - Portail Planet 2 vantaux manuel", matiere:"Aluminium", teinte:"Blanc (autre sur devis)", dims:"1750 x 3000 mm"},
-    {ref:"POINT.P 6241192", nom:"ALUCLOS - Portail Alu.line battant 3m lame semi-ajourée", matiere:"Aluminium", teinte:"Gris texturé 7016", dims:"1685 x 3000 mm"},
-    {ref:"POINT.P 4924386", nom:"OCLER - Portail Lou 2 vantaux manuel", matiere:"Aluminium", teinte:"Blanc (autre sur devis)", dims:"1850 x 3000 mm"},
-    {ref:"POINT.P 4924388", nom:"OCLER - Portail Nina 2 vantaux manuel", matiere:"Aluminium", teinte:"Blanc (autre sur devis)", dims:"1750 x 3000 mm"},
-    {ref:"POINT.P 4924517", nom:"DC - Portail Supremus 2 vantaux manuel", matiere:"Aluminium", teinte:"Blanc (autre sur devis)", dims:"1750 x 3000 mm"},
-    {ref:"POINT.P 4924389", nom:"OCLER - Portail Tess 2 vantaux manuel", matiere:"Aluminium", teinte:"Blanc (autre sur devis)", dims:"1750 x 3000 mm"},
-    {ref:"POINT.P 4924390", nom:"OCLER - Portail Noah 2 vantaux manuel", matiere:"Aluminium", teinte:"Blanc (autre sur devis)", dims:"1750 x 3000 mm"},
-    {ref:"POINT.P 4924518", nom:"DC - Portail CG 69 Orize 2 vantaux manuel", matiere:"Aluminium", teinte:"Blanc (autre sur devis)", dims:"1750 x 3000 mm"},
-    {ref:"POINT.P 4924520", nom:"DC - Portail CV 23 Cobalt 2 vantaux manuel", matiere:"PVC", teinte:"Blanc", dims:"1750 x 3000 mm"},
-    {ref:"POINT.P 4924519", nom:"DC - Portail CV 67 Thor 2 vantaux manuel", matiere:"PVC", teinte:"Blanc", dims:"1750 x 3000 mm"},
-    {ref:"POINT.P 7769038", nom:"CLOHEAC - Portail battant PVC Jarama", matiere:"PVC", teinte:"Blanc RAL 9010", dims:"1400 x 1500 mm"},
-    {ref:"", nom:"Autre / Sur mesure", matiere:"", teinte:"", dims:""}
-  ];
-
   const today = new Date();
   const dateStr = today.toLocaleDateString('fr-FR');
   const devisNum = "DZ-" + today.getFullYear() + String(today.getMonth()+1).padStart(2,'0') + String(today.getDate()).padStart(2,'0') + "-" + String(Math.floor(Math.random()*900)+100);
@@ -137,7 +141,7 @@
           <div class="sub">Serrurerie · Menuiserie & Miroiterie</div>
         </div>
         <div class="contact">
-          <div><input id="cEntreprise" value="ZMR Fermeture"/></div>
+          <div><input id="cEntreprise" value="ORLEANS MENUISERIE ZMR Fermeture"/></div>
           <div><input id="cTel" value="Tél : 07 83 60 66 78"/></div>
           <div><input id="cAdresse" placeholder="Adresse de l'entreprise"/></div>
           <div><input id="cSiret" placeholder="SIRET"/></div>
@@ -168,7 +172,7 @@
         <table>
           <thead>
             <tr>
-              <th style="width:22%">Modèle (catalogue)</th>
+              <th style="width:22%"><span class="editableHead" contenteditable="true" spellcheck="false">Modèle (catalogue)</span></th>
               <th style="width:16%">Référence</th>
               <th style="width:14%">Dimensions</th>
               <th style="width:12%">Teinte / Matière</th>
@@ -240,7 +244,6 @@
         </div>
       </div>
 
-      <div class="footer-note">ZMR Fermeture — Serrurerie, Menuiserie & Miroiterie — Document généré le ${dateStr}</div>
     </div>
   `;
 
@@ -248,19 +251,15 @@
   const lineBody = root.querySelector('#lineBody');
   let lineCount = 0;
 
-  function optionsHtml(selectedIdx) {
-    return CATALOGUE.map((p,i) => `<option value="${i}" ${i===selectedIdx?'selected':''}>${p.nom}</option>`).join('');
-  }
-
   function addLine() {
     const idx = lineCount++;
     const tr = document.createElement('tr');
     tr.dataset.idx = idx;
     tr.innerHTML = `
-      <td><select class="selModel">${optionsHtml(0)}</select></td>
-      <td><input class="fRef" value="${CATALOGUE[0].ref}"/></td>
-      <td><input class="fDims" value="${CATALOGUE[0].dims}"/></td>
-      <td><input class="fTeinte" value="${CATALOGUE[0].matiere} - ${CATALOGUE[0].teinte}"/></td>
+      <td><input class="fModel" placeholder="Nom du modèle"/></td>
+      <td><input class="fRef" placeholder="Référence"/></td>
+      <td><input class="fDims" placeholder="L x H"/></td>
+      <td><input class="fTeinte" placeholder="Teinte / matière"/></td>
       <td><input class="fQte" type="number" min="1" value="1"/></td>
       <td><input class="fPU" type="number" min="0" step="0.01" value="0"/></td>
       <td class="num fTotal">0,00 €</td>
@@ -268,14 +267,6 @@
     `;
     lineBody.appendChild(tr);
 
-    const sel = tr.querySelector('.selModel');
-    sel.addEventListener('change', () => {
-      const p = CATALOGUE[sel.value];
-      tr.querySelector('.fRef').value = p.ref;
-      tr.querySelector('.fDims').value = p.dims;
-      tr.querySelector('.fTeinte').value = (p.matiere ? p.matiere + " - " : "") + p.teinte;
-      recalc();
-    });
     tr.querySelectorAll('.fQte, .fPU').forEach(inp => inp.addEventListener('input', recalc));
     tr.querySelector('.row-del').addEventListener('click', () => { tr.remove(); recalc(); });
   }
